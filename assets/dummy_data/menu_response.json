@@ -1,0 +1,52 @@
+{
+  "message": {
+    "title": "OK",
+    "body": "Request successful"
+  },
+  "data": [
+    {
+      "title" : "Wisata",
+      "type" : "web",
+      "icons" : "assets/icons/wisata.png",
+      "link"  : "https://www.tripadvisor.co.id/Attractions-g790288-Activities-Indramayu_West_Java_Java.html"
+    },
+    {
+      "title" : "Paket Wisata",
+      "type" : "wa",
+      "icons" : "assets/icons/packet.png",
+      "link"  : "https://wa.me/+6285624277920?text=I'm%20interested%20in%20your%20car%20for%20sale"
+    },
+    {
+      "title" : "Event",
+      "type" : "wa",
+      "icons" : "assets/icons/event.png",
+      "link"  : "https://wa.me/+6285624277920?text=I'm%20interested%20in%20your%20car%20for%20sale"
+    },
+    {
+      "title" : "Kuliner",
+      "type" : "web",
+      "icons" : "assets/icons/kuliner.png",
+      "link"  : "https://www.detik.com/jabar/kuliner/d-6310770/5-kuliner-khas-indramayu-paling-nikmat-dan-lezat-wajib-coba"
+    },
+    {
+      "title" : "Akomodasi",
+      "type" : "web",
+      "icons" : "assets/icons/akomodasi.png",
+      "link"  : "https://wa.me/+6285624277920?text=I'm%20interested%20in%20your%20car%20for%20sale"
+    },
+    {
+      "title" : "Desa Wisata",
+      "type" : "web",
+      "icons" : "assets/icons/desa_wisata.png",
+      "link"  : "https://rejabar.republika.co.id/berita/s400q5432/pemkab-indramayu-bantu-pengembangan-11-desa-wisata"
+    }
+    
+  ],
+  "pagination": {
+    "currentPage": 1,
+    "currentElements": 5,
+    "totalPages": 1,
+    "totalElements": 0,
+    "sortBy": []
+  }
+}
