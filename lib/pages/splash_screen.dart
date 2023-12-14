@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sipayu/constants/session_constant.dart';
 import 'package:sipayu/pages/login_screen.dart';
+import 'package:sipayu/pages/main_screen.dart';
+import 'package:sipayu/services/home_services.dart';
 
 class SplashScreen extends StatefulHookConsumerWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -15,9 +19,16 @@ class SplashScreen extends StatefulHookConsumerWidget {
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
   Future init() async {
-    Future.delayed(const Duration(seconds: 2), () {
-      Get.offAll(const LoginScreen());
-    });
+    GetStorage session = GetStorage();
+    if (session.hasData(SessionConstant.id)) {
+      Future.delayed(const Duration(seconds: 2), () {
+        Get.offAll(const MainScreen());
+      });
+    } else {
+      Future.delayed(const Duration(seconds: 2), () {
+        Get.offAll(const LoginScreen());
+      });
+    }
   }
 
   @override

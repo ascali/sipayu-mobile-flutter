@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sipayu/pages/edit_profile.dart';
+import 'package:sipayu/pages/widgets/dialog_builder.dart';
+import 'package:sipayu/pods/auth_pod.dart';
 import 'package:sipayu/utils/text_style.dart';
 
 class SettingScreen extends StatefulHookConsumerWidget {
@@ -98,7 +100,9 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                         ),
-                        onPressed: () {},
+                        onPressed: () => showAlertDialog(context,
+                            yes: () =>
+                                ref.read(authPodProvider.notifier).logout()),
                         icon: const Icon(
                           Icons.logout_outlined,
                           color: Colors.white,

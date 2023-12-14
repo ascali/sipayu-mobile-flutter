@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:sipayu/pages/login_screen.dart';
 import 'package:sipayu/pages/splash_screen.dart';
 
-void main() {
+void main() async {
+  await GetStorage.init();
   runApp(UncontrolledProviderScope(
       container: ProviderContainer(), child: const MainApp()));
 }

@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sipayu/pages/main_screen.dart';
 import 'package:sipayu/pages/register_screen.dart';
 import 'package:sipayu/pages/widgets/text_input.dart';
+import 'package:sipayu/pods/auth_pod.dart';
 import 'package:sipayu/utils/text_style.dart';
 
 class LoginScreen extends StatefulHookConsumerWidget {
@@ -18,6 +19,8 @@ class LoginScreen extends StatefulHookConsumerWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final TextEditingController _controllerEmail = TextEditingController();
+  final TextEditingController _controllerPassword = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +51,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: Column(
                         children: [
                           TextInput(
-                            controller: TextEditingController(),
+                            controller: _controllerEmail,
                             icon: Icons.email_outlined,
                             hintText: 'Masukan Alamat Surel',
                           ),
@@ -56,7 +59,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             height: 10.0,
                           ),
                           TextInput(
-                            controller: TextEditingController(),
+                            controller: _controllerPassword,
                             icon: Icons.password_outlined,
                             hintText: 'Masukan Kata Sandi',
                             obscureText: true,
@@ -89,7 +92,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             width: double.infinity,
                             height: 54,
                             child: ElevatedButton(
-                              onPressed: () => Get.offAll(const MainScreen()),
+                              onPressed: () => ref
+                                  .read(authPodProvider.notifier)
+                                  .login(_controllerEmail.text.trim(),
+                                      _controllerPassword.text.trim()),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.red,
                                 foregroundColor: Colors.white,
