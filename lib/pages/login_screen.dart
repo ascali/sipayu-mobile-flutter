@@ -54,6 +54,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             controller: _controllerEmail,
                             icon: Icons.email_outlined,
                             hintText: 'Masukan Alamat Surel',
+                            maxLines: 1,
+                            minLines: 1,
                           ),
                           const SizedBox(
                             height: 10.0,
@@ -63,6 +65,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             icon: Icons.password_outlined,
                             hintText: 'Masukan Kata Sandi',
                             obscureText: true,
+                            maxLines: 1,
+                            minLines: 1,
                           ),
                           const SizedBox(height: 16.0),
                           Row(

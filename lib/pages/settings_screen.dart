@@ -2,8 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sipayu/constants/session_constant.dart';
 import 'package:sipayu/pages/edit_profile.dart';
 import 'package:sipayu/pages/widgets/dialog_builder.dart';
 import 'package:sipayu/pods/auth_pod.dart';
@@ -18,6 +20,7 @@ class SettingScreen extends StatefulHookConsumerWidget {
 }
 
 class _SettingScreenState extends ConsumerState<SettingScreen> {
+  GetStorage session = GetStorage();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +32,7 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
             style: TextStyleCustom.bold400(),
           ),
           Text(
-            "Hallo, Ascaliko",
+            "Hallo, ${session.read(SessionConstant.username)}",
             style: TextStyleCustom.bold600(size: 26),
           ),
           Text(
@@ -146,92 +149,96 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
             height: 40.0,
           ),
           Text(
-            "History",
+            "Profile",
             style: TextStyleCustom.bold500(
               size: 18,
             ),
           ),
-          ListView.builder(
-              shrinkWrap: true,
-              itemCount: 4,
-              itemBuilder: (context, i) {
-                return Stack(
-                  children: [
-                    Positioned(
-                      top: 20,
-                      child: SizedBox(
-                        width: Get.width * 0.2,
-                        child: Text(
-                          '12:30 WIB',
-                          style: TextStyleCustom.bold400(size: 14),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(60, 17, 10, 30),
-                      child: Row(
-                        children: [
-                          SizedBox(width: Get.width * 0.1),
-                          SizedBox(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Pesta Laut',
-                                  style: TextStyleCustom.bold600(),
-                                ),
-                                Text('01 Desember 2023',
-                                    style: TextStyleCustom.bold400(size: 16))
-                              ],
-                            ),
-                          ),
-                          const Spacer(),
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              color: Colors.red,
-                            ),
-                            padding: const EdgeInsets.all(8),
-                            child: const Icon(
-                              Icons.route_sharp,
-                              color: Colors.white,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      left: 80,
-                      child: Container(
-                        height: Get.height * 0.7,
-                        width: 1.0,
-                        color: Colors.grey.shade400,
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 5,
-                      left: 28,
-                      child: Padding(
-                        padding: const EdgeInsets.all(40.0),
-                        child: Container(
-                          height: 25.0,
-                          width: 25.0,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          alignment: Alignment.center,
-                          child: const Icon(
-                            Icons.location_on_rounded,
-                            size: 15,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }),
+          ListTile(
+            title: Text(session.read(SessionConstant.username)),
+            subtitle: Text(session.read(SessionConstant.email)),
+          ),
+          // ListView.builder(
+          //     shrinkWrap: true,
+          //     itemCount: 4,
+          //     itemBuilder: (context, i) {
+          //       return Stack(
+          //         children: [
+          //           Positioned(
+          //             top: 20,
+          //             child: SizedBox(
+          //               width: Get.width * 0.2,
+          //               child: Text(
+          //                 '12:30 WIB',
+          //                 style: TextStyleCustom.bold400(size: 14),
+          //               ),
+          //             ),
+          //           ),
+          //           Padding(
+          //             padding: const EdgeInsets.fromLTRB(60, 17, 10, 30),
+          //             child: Row(
+          //               children: [
+          //                 SizedBox(width: Get.width * 0.1),
+          //                 SizedBox(
+          //                   child: Column(
+          //                     crossAxisAlignment: CrossAxisAlignment.start,
+          //                     children: [
+          //                       Text(
+          //                         'Pesta Laut',
+          //                         style: TextStyleCustom.bold600(),
+          //                       ),
+          //                       Text('01 Desember 2023',
+          //                           style: TextStyleCustom.bold400(size: 16))
+          //                     ],
+          //                   ),
+          //                 ),
+          //                 const Spacer(),
+          //                 Container(
+          //                   decoration: BoxDecoration(
+          //                     borderRadius: BorderRadius.circular(100),
+          //                     color: Colors.red,
+          //                   ),
+          //                   padding: const EdgeInsets.all(8),
+          //                   child: const Icon(
+          //                     Icons.route_sharp,
+          //                     color: Colors.white,
+          //                   ),
+          //                 )
+          //               ],
+          //             ),
+          //           ),
+          //           Positioned(
+          //             left: 80,
+          //             child: Container(
+          //               height: Get.height * 0.7,
+          //               width: 1.0,
+          //               color: Colors.grey.shade400,
+          //             ),
+          //           ),
+          //           Positioned(
+          //             bottom: 5,
+          //             left: 28,
+          //             child: Padding(
+          //               padding: const EdgeInsets.all(40.0),
+          //               child: Container(
+          //                 height: 25.0,
+          //                 width: 25.0,
+          //                 decoration: BoxDecoration(
+          //                   color: Colors.red,
+          //                   borderRadius: BorderRadius.circular(20),
+          //                 ),
+          //                 alignment: Alignment.center,
+          //                 child: const Icon(
+          //                   Icons.location_on_rounded,
+          //                   size: 15,
+          //                   color: Colors.white,
+          //                 ),
+          //               ),
+          //             ),
+          //           ),
+          //         ],
+          //       );
+          //     }),
         ],
       ),
     );

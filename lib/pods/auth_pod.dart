@@ -29,6 +29,7 @@ class AuthPod extends _$AuthPod {
 
     loadingBuilder();
     final res = await loginService.login(email!, password!);
+    Get.back();
     if (res) {
       Get.offAll(const MainScreen());
       return;

@@ -1,24 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'auth_pod.dart';
+part of 'ads_pod.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authPodHash() => r'd3f04ff3e2589f79ef0f37ac528eb8b3a9aa9e42';
+String _$adsPodHash() => r'6d909855626661d790912c8e68a5b058aecfb8e1';
 
-/// See also [AuthPod].
-@ProviderFor(AuthPod)
-final authPodProvider = NotifierProvider<AuthPod, AsyncValue<void>>.internal(
-  AuthPod.new,
-  name: r'authPodProvider',
+/// See also [AdsPod].
+@ProviderFor(AdsPod)
+final adsPodProvider =
+    NotifierProvider<AdsPod, AsyncValue<List<AdsData>?>>.internal(
+  AdsPod.new,
+  name: r'adsPodProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$authPodHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$adsPodHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$AuthPod = Notifier<AsyncValue<void>>;
+typedef _$AdsPod = Notifier<AsyncValue<List<AdsData>?>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

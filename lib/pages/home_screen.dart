@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:developer';
+
+import 'package:cached_memory_image/cached_memory_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -5,6 +9,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sipayu/pages/all_destination.dart';
 import 'package:sipayu/pages/detail_destination.dart';
+import 'package:sipayu/pages/event_screen.dart';
+import 'package:sipayu/pods/ads_pod.dart';
+import 'package:sipayu/pods/destination_pod.dart';
+import 'package:sipayu/pods/ebrosure_pod.dart';
 import 'package:sipayu/pods/menu_pod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -25,10 +33,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
   ];
   final CarouselController _controller = CarouselController();
+  final CarouselController _controllerAds = CarouselController();
   int _current = 0;
+  int _currentAds = 0;
   @override
   void initState() {
-    Future.microtask(() => ref.read(menuPodProvider.notifier).getDataMenu());
+    Future.microtask(() {
+      ref.read(menuPodProvider.notifier).getDataMenu();
+      ref.read(adsPodProvider.notifier).getDataAds();
+      ref.read(eBrosurePodProvider.notifier).getBrosure();
+      ref.read(destinationPodProvider.notifier).getDestination('1');
+    });
     super.initState();
   }
 
@@ -41,6 +56,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final pod = ref.watch(menuPodProvider);
+    final adsPod = ref.watch(adsPodProvider);
+    final brosurePod = ref.watch(eBrosurePodProvider);
+    final destinationPod = ref.watch(destinationPodProvider);
     return Scaffold(
       body: SingleChildScrollView(
         primary: true,
@@ -50,12 +68,142 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Stack(
             children: [
               Positioned(
-                  left: 0,
-                  right: 0,
-                  top: 0,
-                  child: Image.asset('assets/images/bg_home.png')),
+                  left: -10,
+                  right: -10,
+                  top: -16,
+                  child: adsPod.when(
+                      data: (data) {
+                        if (data?.isEmpty == true) {
+                          return Image.asset('assets/images/bg_home.png');
+                        }
+                        return Stack(
+                          children: [
+                            CarouselSlider(
+                              items: data!
+                                  .map<Widget>((item) => InkWell(
+                                        onTap: () => _launchUrl(item.url ?? ''),
+                                        child: Container(
+                                          margin: const EdgeInsets.all(5.0),
+                                          child: ClipRRect(
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                      Radius.circular(5.0)),
+                                              child: Stack(
+                                                children: <Widget>[
+                                                  CachedMemoryImage(
+                                                    uniqueKey:
+                                                        item.name.toString(),
+                                                    base64: item.image!
+                                                        .split(',')
+                                                        .last,
+                                                    width: 2000,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ],
+                                              )),
+                                        ),
+                                      ))
+                                  .toList(),
+                              carouselController: _controllerAds,
+                              options: CarouselOptions(
+                                  autoPlay: true,
+                                  enlargeCenterPage: false,
+                                  viewportFraction: 1.0,
+                                  autoPlayInterval: const Duration(seconds: 5),
+                                  autoPlayAnimationDuration:
+                                      const Duration(milliseconds: 500),
+                                  onPageChanged: (index, reason) {
+                                    setState(() {
+                                      _currentAds = index;
+                                    });
+                                  }),
+                            ),
+                            Positioned(
+                                top: 80,
+                                left: 30,
+                                child: InkWell(
+                                  onTap: () => _controllerAds.previousPage(),
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    alignment: Alignment.centerRight,
+                                    padding: const EdgeInsets.all(10.0),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(100),
+                                      color: Colors.white.withOpacity(0.8),
+                                    ),
+                                    child: const Icon(Icons.arrow_back_ios,
+                                        size: 15, weight: 20),
+                                  ),
+                                )),
+                            Positioned(
+                                top: 80,
+                                right: 30,
+                                child: InkWell(
+                                  onTap: () => _controllerAds.nextPage(),
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    alignment: Alignment.centerRight,
+                                    padding: const EdgeInsets.all(10.0),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(100),
+                                      color: Colors.white.withOpacity(0.8),
+                                    ),
+                                    child: const Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 15,
+                                      weight: 20,
+                                    ),
+                                  ),
+                                )),
+                            Positioned(
+                                bottom: 60,
+                                left: 30,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Sikat Promonya Sekarang",
+                                          style: GoogleFonts.poly(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 10,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              8, 2, 8, 0),
+                                          child: Image.asset(
+                                            'assets/icons/arrow.png',
+                                            scale: 1,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    Image.asset(
+                                      'assets/icons/ads.png',
+                                      scale: 1,
+                                    )
+                                  ],
+                                ))
+                          ],
+                        );
+                      },
+                      error: (e, error) => Center(
+                            child: Text(error.toString()),
+                          ),
+                      loading: () => const Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          ))),
               Positioned(
-                top: 180,
+                top: 160,
                 left: 16,
                 right: 16,
                 child: Card(
@@ -110,8 +258,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       data!.length,
                                       (index) {
                                         return InkWell(
-                                          onTap: () => _launchUrl(
-                                              data[index].link ?? ''),
+                                          onTap: () =>
+                                              data[index].name?.toLowerCase() ==
+                                                      'event'
+                                                  ? Get.to(const EventScreen())
+                                                  : Get.to(AllDestinationScreen(
+                                                      menu: data[index],
+                                                    )),
                                           child: Container(
                                             decoration: BoxDecoration(
                                                 border: Border.all(
@@ -127,12 +280,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.center,
                                               children: [
-                                                Image.asset(
-                                                  data[index].icons ?? '',
-                                                  fit: BoxFit.fill,
+                                                CachedMemoryImage(
+                                                  uniqueKey: data[index]
+                                                      .name
+                                                      .toString(),
+                                                  base64: data[index]
+                                                      .image!
+                                                      .split(',')
+                                                      .last,
+                                                  height: 50,
                                                 ),
                                                 Text(
-                                                  data[index].title ?? '',
+                                                  data[index].name ?? '',
                                                   style: GoogleFonts.poly(
                                                     fontSize: 12,
                                                     color: Colors.red,
@@ -178,92 +337,117 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       ],
                     ),
-                    CarouselSlider(
-                      items: imgList
-                          .map<Widget>((item) => Container(
-                                margin: const EdgeInsets.all(5.0),
-                                child: ClipRRect(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(5.0)),
-                                    child: Stack(
-                                      children: <Widget>[
-                                        Image.network(item,
-                                            fit: BoxFit.cover, width: 1000.0),
-                                        Positioned(
-                                          bottom: 0.0,
-                                          left: 0.0,
-                                          right: 0.0,
-                                          child: Container(
-                                              decoration: const BoxDecoration(
-                                                gradient: LinearGradient(
-                                                  colors: [
-                                                    Color.fromARGB(
-                                                        200, 0, 0, 0),
-                                                    Color.fromARGB(0, 0, 0, 0)
-                                                  ],
-                                                  begin: Alignment.bottomCenter,
-                                                  end: Alignment.topCenter,
-                                                ),
+                    brosurePod.when(
+                        data: (data) {
+                          if (data?.isEmpty == true) {
+                            return Container();
+                          }
+                          return CarouselSlider(
+                            items: data!
+                                .map<Widget>((item) => Container(
+                                      margin: const EdgeInsets.all(5.0),
+                                      child: ClipRRect(
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(5.0)),
+                                          child: Stack(
+                                            children: <Widget>[
+                                              CachedMemoryImage(
+                                                uniqueKey: item.name.toString(),
+                                                base64:
+                                                    item.image!.split(',').last,
+                                                width: 1000,
+                                                fit: BoxFit.cover,
                                               ),
-                                              alignment: Alignment.center,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 10.0,
-                                                      horizontal: 20.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: imgList
-                                                    .asMap()
-                                                    .entries
-                                                    .map((entry) {
-                                                  return GestureDetector(
-                                                    onTap: () => _controller
-                                                        .animateToPage(
-                                                            entry.key),
-                                                    child: Container(
-                                                      width: 12.0,
-                                                      height: 12.0,
-                                                      margin: const EdgeInsets
-                                                          .symmetric(
-                                                          vertical: 8.0,
-                                                          horizontal: 4.0),
-                                                      decoration: BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          color: (Theme.of(context)
-                                                                          .brightness ==
-                                                                      Brightness
-                                                                          .dark
-                                                                  ? Colors.white
-                                                                  : Colors
-                                                                      .white)
-                                                              .withOpacity(
-                                                                  _current ==
-                                                                          entry
-                                                                              .key
-                                                                      ? 0.9
-                                                                      : 0.4)),
+                                              Positioned(
+                                                bottom: 0.0,
+                                                left: 0.0,
+                                                right: 0.0,
+                                                child: Container(
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                      gradient: LinearGradient(
+                                                        colors: [
+                                                          Color.fromARGB(
+                                                              200, 0, 0, 0),
+                                                          Color.fromARGB(
+                                                              0, 0, 0, 0)
+                                                        ],
+                                                        begin: Alignment
+                                                            .bottomCenter,
+                                                        end:
+                                                            Alignment.topCenter,
+                                                      ),
                                                     ),
-                                                  );
-                                                }).toList(),
-                                              )),
-                                        ),
-                                      ],
-                                    )),
-                              ))
-                          .toList(),
-                      carouselController: _controller,
-                      options: CarouselOptions(
-                          autoPlay: true,
-                          enlargeCenterPage: false,
-                          viewportFraction: 1.0,
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              _current = index;
-                            });
-                          }),
-                    ),
+                                                    alignment: Alignment.center,
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        vertical: 10.0,
+                                                        horizontal: 20.0),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: imgList
+                                                          .asMap()
+                                                          .entries
+                                                          .map((entry) {
+                                                        return GestureDetector(
+                                                          onTap: () =>
+                                                              _controller
+                                                                  .animateToPage(
+                                                                      entry
+                                                                          .key),
+                                                          child: Container(
+                                                            width: 12.0,
+                                                            height: 12.0,
+                                                            margin:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                                    vertical:
+                                                                        8.0,
+                                                                    horizontal:
+                                                                        4.0),
+                                                            decoration: BoxDecoration(
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                                color: (Theme.of(context).brightness ==
+                                                                            Brightness
+                                                                                .dark
+                                                                        ? Colors
+                                                                            .white
+                                                                        : Colors
+                                                                            .white)
+                                                                    .withOpacity(_current ==
+                                                                            entry.key
+                                                                        ? 0.9
+                                                                        : 0.4)),
+                                                          ),
+                                                        );
+                                                      }).toList(),
+                                                    )),
+                                              ),
+                                            ],
+                                          )),
+                                    ))
+                                .toList(),
+                            carouselController: _controller,
+                            options: CarouselOptions(
+                                autoPlay: true,
+                                enlargeCenterPage: false,
+                                viewportFraction: 1.0,
+                                onPageChanged: (index, reason) {
+                                  setState(() {
+                                    _current = index;
+                                  });
+                                }),
+                          );
+                        },
+                        error: (e, error) => Center(
+                              child: Text(error.toString()),
+                            ),
+                        loading: () => const Center(
+                              child: CircularProgressIndicator.adaptive(),
+                            )),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -275,7 +459,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () => Get.to(AllDestinationScreen()),
+                          onPressed: () => Get.to(AllDestinationScreen(
+                            menu: ref
+                                .read(menuPodProvider)
+                                .value
+                                ?.where((element) =>
+                                    element.name?.toLowerCase() == 'wisata')
+                                .toList()
+                                .first,
+                          )),
                           child: Text(
                             "Lihat Semua",
                             style: GoogleFonts.poly(
@@ -287,96 +479,139 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       ],
                     ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      controller: ScrollController(),
-                      child: Row(
-                        children: List.generate(
-                          10,
-                          (index) {
-                            var item = {};
-                            bool selected = index == 0;
+                    destinationPod.when(
+                        data: (data) {
+                          if (data?.any((element) => element.id == '1') ==
+                              true) {
+                            List<DestinationViewModel> list = data
+                                    ?.where((element) => element.id == '1')
+                                    .toList() ??
+                                [];
+                            if (list.first.destinations.isEmpty) {
+                              return Container();
+                            }
 
-                            return InkWell(
-                              onTap: () => Get.to(DetailDestination()),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 8.0,
-                                ),
-                                margin: const EdgeInsets.only(right: 10.0),
-                                decoration: const BoxDecoration(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(16.0),
-                                  ),
-                                ),
-                                child: Container(
-                                  width: 160,
-                                  height: 160,
-                                  margin: const EdgeInsets.only(right: 10.0),
-                                  decoration: BoxDecoration(
-                                    image: const DecorationImage(
-                                      image: NetworkImage(
-                                        "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=710&q=80",
-                                      ),
-                                      fit: BoxFit.cover,
-                                    ),
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(16.0),
-                                    ),
-                                    color: Colors.blue[400],
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      Positioned(
-                                        bottom: 0,
-                                        left: 0,
-                                        right: 0,
-                                        top: 10,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(12.0),
-                                          decoration: const BoxDecoration(
-                                            color: Colors.black12,
-                                            borderRadius: BorderRadius.only(
-                                              bottomLeft: Radius.circular(16.0),
-                                              bottomRight:
-                                                  Radius.circular(16.0),
-                                            ),
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              controller: ScrollController(),
+                              child: Row(
+                                children: List.generate(
+                                  list.first.destinations.length,
+                                  (index) {
+                                    var destination =
+                                        list.first.destinations[index];
+                                    var item = {};
+                                    bool selected = index == 0;
+
+                                    return InkWell(
+                                      onTap: () => Get.to(DetailDestination(
+                                        data: destination,
+                                      )),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0,
+                                        ),
+                                        margin:
+                                            const EdgeInsets.only(right: 10.0),
+                                        decoration: const BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(16.0),
                                           ),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "Indramayu",
-                                                overflow: TextOverflow.ellipsis,
-                                                style: GoogleFonts.andika(
-                                                  fontSize: 16,
-                                                  color: Colors.white,
-                                                ),
+                                        ),
+                                        child: Container(
+                                          width: 160,
+                                          height: 160,
+                                          margin: const EdgeInsets.only(
+                                              right: 10.0),
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                              image: CachedMemoryImageProvider(
+                                                destination.id.toString(),
+                                                bytes: base64Decode(destination
+                                                    .image!
+                                                    .split(',')
+                                                    .last),
                                               ),
-                                              Text(
-                                                "16 Lokasi",
-                                                overflow: TextOverflow.ellipsis,
-                                                style: GoogleFonts.poppins(
-                                                  fontSize: 12,
-                                                  color: Colors.white,
+                                              fit: BoxFit.cover,
+                                            ),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                              Radius.circular(16.0),
+                                            ),
+                                            color: Colors.blue[400],
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              Positioned(
+                                                bottom: 0,
+                                                left: 0,
+                                                right: 0,
+                                                top: 10,
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(
+                                                      12.0),
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Colors.black12,
+                                                    borderRadius:
+                                                        BorderRadius.only(
+                                                      bottomLeft:
+                                                          Radius.circular(16.0),
+                                                      bottomRight:
+                                                          Radius.circular(16.0),
+                                                    ),
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        destination.name ?? '',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        maxLines: 2,
+                                                        style:
+                                                            GoogleFonts.andika(
+                                                          fontSize: 16,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        destination
+                                                                .description ??
+                                                            '',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        maxLines: 2,
+                                                        style:
+                                                            GoogleFonts.poppins(
+                                                          fontSize: 12,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    );
+                                  },
                                 ),
                               ),
                             );
-                          },
-                        ),
-                      ),
-                    ),
+                          }
+                          return Container();
+                        },
+                        error: (s, e) => Text(e.toString()),
+                        loading: () => const Center(
+                              child: CircularProgressIndicator.adaptive(),
+                            ))
                   ],
                 ),
               )

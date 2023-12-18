@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  maps_launcher
   nb_utils
   url_launcher_linux
 )

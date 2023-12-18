@@ -1,14 +1,28 @@
 // ignore_for_file: camel_case_types, prefer_typing_uninitialized_variables
 
+import 'package:cached_memory_image/cached_memory_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:maps_launcher/maps_launcher.dart';
+
+import 'package:sipayu/models/destination_model/data_destination.dart';
+import 'package:sipayu/models/toi_model/data_menu.dart';
+import 'package:sipayu/pages/all_map_screen.dart';
+import 'package:sipayu/pages/review_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'main_screen.dart';
 
 class DetailDestination extends StatefulHookConsumerWidget {
-  const DetailDestination({Key? key}) : super(key: key);
+  final DataDestination data;
+  final DataMenu? menu;
+  const DetailDestination({
+    Key? key,
+    required this.data,
+    this.menu,
+  }) : super(key: key);
 
   @override
   ConsumerState<StatefulHookConsumerWidget> createState() =>
@@ -16,16 +30,22 @@ class DetailDestination extends StatefulHookConsumerWidget {
 }
 
 class _DetailDestinationState extends ConsumerState<DetailDestination> {
+  Future<void> openMap(double latitude, double longitude) async {
+    MapsLauncher.launchCoordinates(latitude, longitude);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
           Positioned.fill(
-              child: Image.network(
-            'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=710&q=80',
-            fit: BoxFit.fill,
-          )),
+            child: CachedMemoryImage(
+              uniqueKey: widget.data.name.toString(),
+              base64: widget.data.image!.split(',').last,
+              fit: BoxFit.fill,
+            ),
+          ),
           Positioned(
               top: 30,
               left: 16,
@@ -37,14 +57,15 @@ class _DetailDestinationState extends ConsumerState<DetailDestination> {
                 ),
               )),
           Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
+            bottom: -10,
+            left: -10,
+            right: -10,
             top: 0,
             child: DraggableScrollableSheet(
                 expand: true,
-                minChildSize: 0.45,
-                initialChildSize: 0.45,
+                minChildSize: 0.4,
+                maxChildSize: 1,
+                initialChildSize: 0.4,
                 builder: (context, scrollController) {
                   return Card(
                     shape: const RoundedRectangleBorder(
@@ -57,6 +78,8 @@ class _DetailDestinationState extends ConsumerState<DetailDestination> {
                       context: context,
                       removeTop: true,
                       child: ListView(
+                        controller: scrollController,
+                        shrinkWrap: true,
                         padding: const EdgeInsets.all(16),
                         children: [
                           Align(
@@ -71,21 +94,21 @@ class _DetailDestinationState extends ConsumerState<DetailDestination> {
                             ),
                           ),
                           Text(
-                            'Pantai BALI',
+                            widget.data.name ?? '',
                             style: GoogleFonts.andika(fontSize: 42),
                           ),
                           const SizedBox(
                             height: 6.0,
                           ),
                           Text(
-                            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard',
+                            widget.data.description ?? '',
                             style: GoogleFonts.poppins(fontSize: 16),
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const Flexible(
+                              Flexible(
                                 child: Row(
                                   children: [
                                     Icon(
@@ -93,13 +116,13 @@ class _DetailDestinationState extends ConsumerState<DetailDestination> {
                                       color: Colors.orange,
                                     ),
                                     Text(
-                                      "4.79",
+                                      (widget.data.rating ?? 0).toString(),
                                       style: TextStyle(
                                         fontSize: 14.0,
                                       ),
                                     ),
                                     Text(
-                                      "(78 Ulasan)",
+                                      "(${(widget.data.review ?? 0).toString()} Ulasan)",
                                       style: TextStyle(
                                         fontSize: 14.0,
                                       ),
@@ -109,7 +132,9 @@ class _DetailDestinationState extends ConsumerState<DetailDestination> {
                               ),
                               Flexible(
                                 child: TextButton(
-                                  onPressed: () {},
+                                  onPressed: () => Get.to(ReviewScreen(
+                                    dataDestination: widget.data,
+                                  )),
                                   child: const Text(
                                     "Lihat Ulasan",
                                     style: TextStyle(
@@ -132,8 +157,13 @@ class _DetailDestinationState extends ConsumerState<DetailDestination> {
                                   width: double.infinity,
                                   height: 54,
                                   child: ElevatedButton(
-                                    onPressed: () =>
-                                        Get.offAll(const MainScreen()),
+                                    onPressed: () => openMap(
+                                        double.tryParse(
+                                                widget.data.latitude ?? '') ??
+                                            0,
+                                        double.tryParse(
+                                                widget.data.longitude ?? '') ??
+                                            0),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.grey,
                                       foregroundColor: Colors.white,
@@ -155,8 +185,9 @@ class _DetailDestinationState extends ConsumerState<DetailDestination> {
                                   width: double.infinity,
                                   height: 54,
                                   child: ElevatedButton(
-                                    onPressed: () =>
-                                        Get.offAll(const MainScreen()),
+                                    onPressed: () => Get.to(AllMapScreen(
+                                      menu: widget.menu,
+                                    )),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.red,
                                       foregroundColor: Colors.white,

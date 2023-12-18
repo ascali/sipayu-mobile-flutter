@@ -1,27 +1,25 @@
 import 'dart:developer';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:sipayu/models/toi_model/data_menu.dart';
+import 'package:sipayu/models/ads_model/ads_data.dart';
 import 'package:sipayu/services/home_services.dart';
 
-part 'menu_pod.g.dart';
+part 'ads_pod.g.dart';
 
 @Riverpod(keepAlive: true)
-class MenuPod extends _$MenuPod {
+class AdsPod extends _$AdsPod {
   final homeSevices = HomeServices();
   @override
-  AsyncValue<List<DataMenu>?> build() {
+  AsyncValue<List<AdsData>?> build() {
     return const AsyncLoading();
   }
 
-  Future getDataMenu() async {
-    final res = await homeSevices.getMenu();
+  Future getDataAds() async {
+    final res = await homeSevices.getAds();
     if (res.error != null) {
       state = AsyncError(res.error ?? '', StackTrace.current);
       return;
     }
-
-    state = AsyncValue.data(res.menus);
-    log('berhasil get menu');
+    state = AsyncValue.data(res.ads);
   }
 }
