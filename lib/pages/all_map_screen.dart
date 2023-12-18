@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:location/location.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 import 'package:sipayu/models/toi_model/data_menu.dart';
 import 'package:sipayu/pods/destination_pod.dart';
 
@@ -52,6 +53,10 @@ class _AllMapScreenState extends ConsumerState<AllMapScreen> {
         _locationData = value;
       });
     });
+  }
+
+  Future<void> openMap(double latitude, double longitude) async {
+    MapsLauncher.launchCoordinates(latitude, longitude);
   }
 
   Future addMarker() async {
@@ -199,7 +204,18 @@ class _AllMapScreenState extends ConsumerState<AllMapScreen> {
                                           const SizedBox(
                                             width: 5.0,
                                           ),
-                                          Image.asset('assets/icons/route.png')
+                                          InkWell(
+                                              onTap: () => openMap(
+                                                  double.tryParse(
+                                                          data.latitude ??
+                                                              '0') ??
+                                                      0,
+                                                  double.tryParse(
+                                                          data.longitude ??
+                                                              '0') ??
+                                                      0),
+                                              child: Image.asset(
+                                                  'assets/icons/route.png'))
                                         ],
                                       ),
                                     ),
