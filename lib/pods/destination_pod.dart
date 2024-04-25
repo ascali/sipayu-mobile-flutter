@@ -7,6 +7,7 @@ import 'package:sipayu/constants/enum.dart';
 
 import 'package:sipayu/models/ads_model/ads_data.dart';
 import 'package:sipayu/models/destination_model/data_destination.dart';
+import 'package:sipayu/models/rating_model/rating_model.dart';
 import 'package:sipayu/pages/widgets/loading_builder.dart';
 import 'package:sipayu/pages/widgets/show_snackbar.dart';
 import 'package:sipayu/services/home_services.dart';
@@ -42,6 +43,23 @@ class DestinationPod extends _$DestinationPod {
     state = AsyncValue.data(list);
   }
 
+  Future<bool> getDestinationOnloading(String id, {int? page}) async {
+    final res = await homeSevices.getDestiantion(id, page: page);
+    if (res.error != null) {
+      state = AsyncError(res.error ?? '', StackTrace.current);
+      return false;
+    }
+
+    List<DataDestination>? list = state.value?.first.destinations;
+
+    list?.addAll(res.destinations ?? []);
+
+    List<DestinationViewModel> destination = [];
+    destination.add(DestinationViewModel(id: id, destinations: list ?? []));
+    state = AsyncValue.data(destination);
+    return true;
+  }
+
   Future createRating(
       {required String userId,
       required String idDestination,
@@ -68,6 +86,18 @@ class DestinationPod extends _$DestinationPod {
         snackBarType: SnackBarType.info,
         message: 'Berhasil Dirating',
         title: 'Review');
+  }
+
+  Future<RatingModel?> getReview(String id) async {
+    loadingBuilder();
+    final res = await homeSevices.getReview(id);
+    Get.back();
+    if (res.error != null) {
+      state = AsyncError(res.error ?? '', StackTrace.current);
+      return null;
+    }
+
+    return res.ratingModel;
   }
 }
 

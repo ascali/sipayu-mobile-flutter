@@ -2,14 +2,19 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cached_memory_image/cached_memory_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sipayu/constants/session_constant.dart';
+import 'package:sipayu/main.dart';
 import 'package:sipayu/pages/all_destination.dart';
 import 'package:sipayu/pages/detail_destination.dart';
 import 'package:sipayu/pages/event_screen.dart';
+import 'package:sipayu/pages/login_screen.dart';
 import 'package:sipayu/pods/ads_pod.dart';
 import 'package:sipayu/pods/destination_pod.dart';
 import 'package:sipayu/pods/ebrosure_pod.dart';
@@ -36,6 +41,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final CarouselController _controllerAds = CarouselController();
   int _current = 0;
   int _currentAds = 0;
+  GetStorage session = GetStorage();
   @override
   void initState() {
     Future.microtask(() {
@@ -90,12 +96,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                       Radius.circular(5.0)),
                                               child: Stack(
                                                 children: <Widget>[
-                                                  CachedMemoryImage(
-                                                    uniqueKey:
-                                                        item.name.toString(),
-                                                    base64: item.image!
-                                                        .split(',')
-                                                        .last,
+                                                  CachedNetworkImage(
+                                                    imageUrl:
+                                                        '$urlImage${item.image}',
                                                     width: 2000,
                                                     fit: BoxFit.cover,
                                                   ),
@@ -258,13 +261,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       data!.length,
                                       (index) {
                                         return InkWell(
-                                          onTap: () =>
-                                              data[index].name?.toLowerCase() ==
-                                                      'event'
+                                          onTap: () => data[index]
+                                                      .name
+                                                      ?.toLowerCase() ==
+                                                  'event'
+                                              ? session.hasData(
+                                                      SessionConstant.id)
                                                   ? Get.to(const EventScreen())
-                                                  : Get.to(AllDestinationScreen(
-                                                      menu: data[index],
-                                                    )),
+                                                  : Get.to(const LoginScreen())
+                                              : Get.to(AllDestinationScreen(
+                                                  menu: data[index],
+                                                )),
                                           child: Container(
                                             decoration: BoxDecoration(
                                                 border: Border.all(
@@ -280,14 +287,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.center,
                                               children: [
-                                                CachedMemoryImage(
-                                                  uniqueKey: data[index]
-                                                      .name
-                                                      .toString(),
-                                                  base64: data[index]
-                                                      .image!
-                                                      .split(',')
-                                                      .last,
+                                                CachedNetworkImage(
+                                                  imageUrl:
+                                                      '$urlImage${data[index].image}',
                                                   height: 50,
                                                 ),
                                                 Text(
@@ -342,6 +344,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           if (data?.isEmpty == true) {
                             return Container();
                           }
+
                           return CarouselSlider(
                             items: data!
                                 .map<Widget>((item) => Container(
@@ -351,10 +354,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               Radius.circular(5.0)),
                                           child: Stack(
                                             children: <Widget>[
-                                              CachedMemoryImage(
-                                                uniqueKey: item.name.toString(),
-                                                base64:
-                                                    item.image!.split(',').last,
+                                              CachedNetworkImage(
+                                                imageUrl:
+                                                    '$urlImage${item.image}',
                                                 width: 1000,
                                                 fit: BoxFit.cover,
                                               ),
@@ -502,7 +504,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         list.first.destinations[index];
                                     var item = {};
                                     bool selected = index == 0;
-
+                                    log(destination.image.toString());
                                     return InkWell(
                                       onTap: () => Get.to(DetailDestination(
                                         data: destination,
@@ -525,12 +527,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               right: 10.0),
                                           decoration: BoxDecoration(
                                             image: DecorationImage(
-                                              image: CachedMemoryImageProvider(
-                                                destination.id.toString(),
-                                                bytes: base64Decode(destination
-                                                    .image!
-                                                    .split(',')
-                                                    .last),
+                                              image: CachedNetworkImageProvider(
+                                                '$urlImage${destination.image}',
                                               ),
                                               fit: BoxFit.cover,
                                             ),

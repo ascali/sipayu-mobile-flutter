@@ -6,6 +6,7 @@ import 'package:sipayu/models/ebrosure_model/e_brosure_data.dart';
 import 'package:sipayu/models/ebrosure_model/ebrosure_model.dart';
 import 'package:sipayu/models/event_model/event_data.dart';
 import 'package:sipayu/models/event_model/event_model.dart';
+import 'package:sipayu/models/rating_model/rating_model.dart';
 import 'package:sipayu/models/toi_model/data_menu.dart';
 import 'package:sipayu/models/toi_model/toi_model.dart';
 import 'package:sipayu/services/dio_service.dart';
@@ -43,10 +44,11 @@ class HomeServices extends DioService {
   }
 
   Future<({List<DataDestination>? destinations, String? error})> getDestiantion(
-      String id) async {
-    var data = await dio.get('destination', queryParameters: {
-      'limit': 5,
-      'page': 1,
+      String id,
+      {int? page}) async {
+    var data = await dio.get('destination/list', queryParameters: {
+      'limit': 10,
+      'page': page ?? 1,
       'id_toi': id,
     });
 
@@ -88,5 +90,20 @@ class HomeServices extends DioService {
     });
 
     return (error: null,);
+  }
+
+  Future<({RatingModel? ratingModel, String? error})> getReview(
+      String idDestination) async {
+    var data = await dio.get('review/list', queryParameters: {
+      'id_destination': idDestination,
+      'limit': 100,
+      'page': 1,
+    });
+
+    RatingModel ratingModel = RatingModel.fromJson(data.data);
+    return (
+      ratingModel: ratingModel,
+      error: null,
+    );
   }
 }

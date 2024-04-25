@@ -3,8 +3,12 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sipayu/constants/session_constant.dart';
 import 'package:sipayu/pages/home_screen.dart';
+import 'package:sipayu/pages/login_screen.dart';
 import 'package:sipayu/pages/settings_screen.dart';
 
 class MainScreen extends StatefulHookConsumerWidget {
@@ -23,9 +27,14 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   int index = 0;
 
   void changeIndex(value) {
-    setState(() {
-      index = value;
-    });
+    GetStorage session = GetStorage();
+    if (session.hasData(SessionConstant.id)) {
+      setState(() {
+        index = value;
+      });
+      return;
+    }
+    Get.to(const LoginScreen());
   }
 
   @override

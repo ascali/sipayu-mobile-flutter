@@ -1,7 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
  <uses-permission android:name="android.permission.INTERNET"/>
  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
- <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -9,7 +8,7 @@
         android:label="sipayu"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAoxLJhrLgCbvNI6Otstc7ekmWQn3O8Fjw"/>
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyCohTmCm2QtIIjMJfCg_th2q2swUmDhUBs"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

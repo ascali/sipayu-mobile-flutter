@@ -15,8 +15,8 @@ class EventPod extends _$EventPod {
     return const AsyncLoading();
   }
 
-  Future getEvent(String month,String year) async {
-    final res = await homeSevices.getEvent(month,year);
+  Future getEvent(String month, String year) async {
+    final res = await homeSevices.getEvent(month, year);
     if (res.error != null) {
       state = AsyncError(res.error ?? '', StackTrace.current);
       return;

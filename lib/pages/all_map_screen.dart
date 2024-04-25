@@ -4,12 +4,14 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:cached_memory_image/cached_memory_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:location/location.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:sipayu/main.dart';
 import 'package:sipayu/models/toi_model/data_menu.dart';
 import 'package:sipayu/pods/destination_pod.dart';
 
@@ -109,6 +111,8 @@ class _AllMapScreenState extends ConsumerState<AllMapScreen> {
                         zoomControlsEnabled: true,
                         compassEnabled: true,
                         mapToolbarEnabled: true,
+                        padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).size.height * 0.70),
                         initialCameraPosition: CameraPosition(
                           target: LatLng(_locationData?.latitude ?? 0,
                               _locationData?.longitude ?? 0),
@@ -146,9 +150,8 @@ class _AllMapScreenState extends ConsumerState<AllMapScreen> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                CachedMemoryImage(
-                                  uniqueKey: data.name.toString(),
-                                  base64: data.image!.split(',').last,
+                                CachedNetworkImage(
+                                  imageUrl: '$urlImage${data.image!}',
                                   fit: BoxFit.cover,
                                   height: 150,
                                   width: 100,

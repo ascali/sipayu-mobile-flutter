@@ -20,15 +20,15 @@ class SplashScreen extends StatefulHookConsumerWidget {
 class _SplashScreenState extends ConsumerState<SplashScreen> {
   Future init() async {
     GetStorage session = GetStorage();
-    if (session.hasData(SessionConstant.id)) {
+    // if (session.hasData(SessionConstant.id)) {
       Future.delayed(const Duration(seconds: 2), () {
         Get.offAll(const MainScreen());
       });
-    } else {
-      Future.delayed(const Duration(seconds: 2), () {
-        Get.offAll(const LoginScreen());
-      });
-    }
+    // // } else {
+    //   Future.delayed(const Duration(seconds: 2), () {
+    //     Get.offAll(const LoginScreen());
+    //   });
+    // }
   }
 
   @override

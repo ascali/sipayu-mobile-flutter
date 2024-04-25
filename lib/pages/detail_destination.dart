@@ -1,16 +1,19 @@
 // ignore_for_file: camel_case_types, prefer_typing_uninitialized_variables
 
 import 'package:cached_memory_image/cached_memory_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:sipayu/main.dart';
 
 import 'package:sipayu/models/destination_model/data_destination.dart';
 import 'package:sipayu/models/toi_model/data_menu.dart';
 import 'package:sipayu/pages/all_map_screen.dart';
 import 'package:sipayu/pages/review_screen.dart';
+import 'package:sipayu/pages/route_destination_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'main_screen.dart';
@@ -18,7 +21,7 @@ import 'main_screen.dart';
 class DetailDestination extends StatefulHookConsumerWidget {
   final DataDestination data;
   final DataMenu? menu;
-  const DetailDestination({
+const DetailDestination({
     Key? key,
     required this.data,
     this.menu,
@@ -40,10 +43,9 @@ class _DetailDestinationState extends ConsumerState<DetailDestination> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: CachedMemoryImage(
-              uniqueKey: widget.data.name.toString(),
-              base64: widget.data.image!.split(',').last,
+            child: CachedNetworkImage(
               fit: BoxFit.fill,
+              imageUrl: '$urlImage${widget.data.image}',
             ),
           ),
           Positioned(
@@ -157,13 +159,11 @@ class _DetailDestinationState extends ConsumerState<DetailDestination> {
                                   width: double.infinity,
                                   height: 54,
                                   child: ElevatedButton(
-                                    onPressed: () => openMap(
-                                        double.tryParse(
-                                                widget.data.latitude ?? '') ??
-                                            0,
-                                        double.tryParse(
-                                                widget.data.longitude ?? '') ??
-                                            0),
+                                    onPressed: () =>
+                                        Get.to(RouteDestinationScreen(
+                                      data: widget.data,
+                                      menu: widget.menu,
+                                    )),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.grey,
                                       foregroundColor: Colors.white,

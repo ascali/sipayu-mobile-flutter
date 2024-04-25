@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sipayu/pages/splash_screen.dart';
 
+var urlImage = 'https://be-sipayu.indramayukab.go.id';
 void main() async {
   await GetStorage.init();
   runApp(UncontrolledProviderScope(
