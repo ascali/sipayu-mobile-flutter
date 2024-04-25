@@ -1,0 +1,4 @@
+storePassword=sipayu
+keyPassword=sipayu
+keyAlias=upload
+storeFile=/Users/jkt-ltp-074/upload-keystore-sipayu.jks
